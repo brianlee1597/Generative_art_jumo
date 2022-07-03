@@ -18,7 +18,6 @@
   "homepage": "https://github.com/brianlee1597/Generative_art_jumo#readme",
   "dependencies": {
     "canvas": "^2.9.3",
-    "dbly-linked-list": "^0.3.5",
     "readline-sync": "^1.4.10",
     "weighted": "^1.0.0"
   },
