@@ -2,7 +2,7 @@
   "name": "generative_art_jumo",
   "version": "1.0.0",
   "description": "Jumo Proj NFT Generator",
-  "main": "mint.ts",
+  "main": "main.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +17,13 @@
   },
   "homepage": "https://github.com/brianlee1597/Generative_art_jumo#readme",
   "dependencies": {
-    "dbly-linked-list": "^0.3.5"
+    "canvas": "^2.9.3",
+    "dbly-linked-list": "^0.3.5",
+    "readline-sync": "^1.4.10",
+    "weighted": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.1",
+    "@types/readline-sync": "^1.4.4"
   }
 }
