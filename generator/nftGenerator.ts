@@ -17,12 +17,22 @@ export default class NFTGenerator implements MintFunction {
     private generatedSet: Set<string>;
     private canvas: Canvas;
     private ctx: CanvasRenderingContext2D;
+    private nftDir: string;
+    private pngDir: string;
 
     constructor (width: number, height: number) {
         this.pathImageMap = new Map();
         this.generatedSet = new Set();
         this.canvas = createCanvas(width, height);
         this.ctx = this.canvas.getContext('2d');
+        this.nftDir = "./nfts";
+        this.pngDir = "./pngs";
+
+        if (!fs.existsSync(this.pngDir))
+            throw new Error("The PNG folder (/pngs) doesn't exist");
+
+        if (!fs.existsSync(this.nftDir))
+            fs.mkdirSync(this.nftDir);
     }
 
     private pickRandomFrom (attr: AttrData): Attr {
@@ -87,7 +97,7 @@ export default class NFTGenerator implements MintFunction {
             
             this.printOnCanvas(attrSet);
             const buffer = this.canvas.toBuffer("image/png");
-            fs.writeFileSync(`./nfts/${name} #${i++}.png`, buffer);
+            fs.writeFileSync(`${this.nftDir}/${name} #${i}.png`, buffer);
             this.clearCanvas();
 
             const metadata = {
