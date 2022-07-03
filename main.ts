@@ -20,5 +20,5 @@ import fs from "fs";
     const nftFactory = new NFTGenerator(width, height);
     await nftFactory.cacheImageBuffers();
     const metadata = nftFactory.generateNFTs(name, attrData, nums);
-    fs.writeFileSync("./metadata/nfts.json", JSON.stringify(metadata));
+    fs.writeFileSync(`${nftFactory.metaDir}/nfts.json`, JSON.stringify(metadata));
 })();
