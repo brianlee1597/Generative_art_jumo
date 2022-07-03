@@ -3,12 +3,13 @@ import weighted from 'weighted';
 import { Canvas, CanvasRenderingContext2D, createCanvas, loadImage } from "canvas";
 import { type AttrData } from "./attrData";
 
-type Attr = { attribute: string };
-type AttrSet = { name: string, attribute: string };
+type Attr = { value: string };
+type AttrSet = { trait_type: string, value: string };
+type MetaData = { filename: string, attributes: AttrSet[] };
 
 interface MintFunction {
     cacheImageBuffers (): Promise<void>;
-    generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): void;
+    generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): MetaData[];
 }
 
 export default class NFTGenerator implements MintFunction {
@@ -25,8 +26,8 @@ export default class NFTGenerator implements MintFunction {
     }
 
     private pickRandomFrom (attr: AttrData): Attr {
-        const attribute = weighted.select(attr.attributes, attr.weights) + ".png";
-        return { attribute };
+        const value = weighted.select(attr.value, attr.weights) + ".png";
+        return { value };
     }
 
     private getRandomAttributesSet (attrData: AttrData[]): AttrSet[] {
@@ -34,7 +35,7 @@ export default class NFTGenerator implements MintFunction {
 
         attrData.forEach(attrs => {
             const attr = this.pickRandomFrom(attrs);
-            attrSet.push({ name: attrs.name, ...attr });
+            attrSet.push({ trait_type: attrs.trait_type, ...attr });
         })
 
         return attrSet;
@@ -42,13 +43,13 @@ export default class NFTGenerator implements MintFunction {
 
     private printOnCanvas (set: AttrSet[]): void {
         set.forEach(attr => {
-            if (attr.attribute.includes("None")) return;
+            if (attr.value.includes("None")) return;
 
-            const folder = this.pathImageMap.get(attr.name);
-            if (!folder) throw new Error(`No folder found for ${attr.name}`);
+            const folder = this.pathImageMap.get(attr.trait_type);
+            if (!folder) throw new Error(`No folder found for ${attr.trait_type}`);
 
-            const imageBuffer = folder.get(attr.attribute);
-            if (!imageBuffer) throw new Error(`No image ${attr.attribute} found in ${attr.name}`);
+            const imageBuffer = folder.get(attr.value);
+            if (!imageBuffer) throw new Error(`No image ${attr.value} found in ${attr.trait_type}`);
 
             this.ctx.drawImage(imageBuffer, 0, 0);
         })
@@ -59,7 +60,9 @@ export default class NFTGenerator implements MintFunction {
     }
 
     public async cacheImageBuffers (): Promise<void> {
-        const attrsList = fs.readdirSync("./pngs");
+        const attrsList = fs.readdirSync("./pngs")
+        .filter(file => !file.includes("DS_Store"));
+
         for (const attrs of attrsList) {
             const attrList = fs.readdirSync(`./pngs/${attrs}`)
             .filter(file => !file.includes("DS_Store"));
@@ -75,8 +78,8 @@ export default class NFTGenerator implements MintFunction {
         };
     }
 
-    public generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): void {
-        let i = 1;
+    public generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): MetaData[] {
+        let i = 1, nftMetadata: MetaData[] = [];
 
         while (i <= numOfNfts) {
             const attrSet = this.getRandomAttributesSet(attrData);
@@ -86,6 +89,15 @@ export default class NFTGenerator implements MintFunction {
             const buffer = this.canvas.toBuffer("image/png");
             fs.writeFileSync(`./nfts/${name} #${i++}.png`, buffer);
             this.clearCanvas();
+
+            const metadata = {
+                filename: `${name} #${i++}.png`,
+                attributes: attrSet,
+            }
+
+            nftMetadata.push(metadata);
         }
+
+        return nftMetadata;
     }
 }
