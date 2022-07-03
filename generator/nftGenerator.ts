@@ -16,10 +16,10 @@ export default class NFTGenerator implements MintFunction {
     private canvas: Canvas;
     private ctx: CanvasRenderingContext2D;
 
-    constructor () {
+    constructor (width: number, height: number) {
         this.pathImageMap = new Map();
         this.generatedSet = new Set();
-        this.canvas = createCanvas(1668, 2388);
+        this.canvas = createCanvas(width, height);
         this.ctx = this.canvas.getContext('2d');
     }
 
@@ -74,8 +74,6 @@ export default class NFTGenerator implements MintFunction {
 
             this.pathImageMap.set(attrs, imageMap);
         };
-
-        console.log(this.pathImageMap);
     }
 
     public generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): void {
