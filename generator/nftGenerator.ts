@@ -7,9 +7,9 @@ type Attr = { value: string };
 type AttrSet = { trait_type: string, value: string };
 type MetaData = { filename: string, attributes: AttrSet[] };
 type PercentageTracker = {
-    [key: string]: {
+    [key: string]: [{
         [key: string]: number,
-    }
+    }, number];
 }
 
 interface MintFunction {
@@ -24,7 +24,7 @@ export default class NFTGenerator implements MintFunction {
     private ctx: CanvasRenderingContext2D;
     private nftDir: string;
     private pngDir: string;
-    public percentTracker: PercentageTracker;
+    public frequencyTracker: PercentageTracker;
     public metaDir: string;
 
     constructor (width: number, height: number) {
@@ -32,7 +32,7 @@ export default class NFTGenerator implements MintFunction {
         this.generatedSet = new Set();
         this.canvas = createCanvas(width, height);
         this.ctx = this.canvas.getContext('2d');
-        this.percentTracker = {};
+        this.frequencyTracker = {};
         this.nftDir = "./nfts";
         this.pngDir = "./pngs";
         this.metaDir = "./metadata";
@@ -93,12 +93,14 @@ export default class NFTGenerator implements MintFunction {
         for (const attrs of attrsList) {
             const attrList = fs.readdirSync(`./pngs/${attrs}`)
             .filter(file => !file.includes("DS_Store"));
-
             const imageMap = new Map();
+            this.frequencyTracker[attrs] = [{}, 0];
 
             for (const attr of attrList) {
                 const image = await loadImage(`./pngs/${attrs}/${attr}`);
+                const value = attr.replace(".png", "");
                 imageMap.set(attr, image);
+                this.frequencyTracker[attrs][0][value] = 0;
             }
 
             this.pathImageMap.set(attrs, imageMap);
@@ -111,6 +113,16 @@ export default class NFTGenerator implements MintFunction {
         while (i <= numOfNfts) {
             const attrSet = this.getRandomAttributesSet(attrData);
             if (this.generatedSet.has(JSON.stringify(attrSet))) continue;
+
+            attrSet.forEach(attr => {
+                if (attr.value.includes("None") && 
+                this.frequencyTracker[attr.trait_type][0][attr.value] === undefined) {
+                    this.frequencyTracker[attr.trait_type][0][attr.value] = 0;
+                }
+
+                this.frequencyTracker[attr.trait_type][0][attr.value] += 1;
+                this.frequencyTracker[attr.trait_type][1] += 1;
+            })
             
             this.printOnCanvas(attrSet);
             const buffer = this.canvas.toBuffer("image/png");
