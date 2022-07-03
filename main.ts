@@ -33,7 +33,7 @@ import { attrData } from "./generator/attrData";
             trait_type: data.trait_type,
             values: data.value.map(val => {
                 const desiredRarity = data.weights[data.value.indexOf(val)] * 100;
-                const actualRarity  = +(frequencies[val] / total * 100).toString().split(".")[0];
+                const actualRarity  = + (frequencies[val] / total * 100).toString().split(".")[0];
 
                 return {
                     value: val,
