@@ -18,10 +18,12 @@
   "homepage": "https://github.com/brianlee1597/Generative_art_jumo#readme",
   "dependencies": {
     "canvas": "^2.9.3",
+    "cli-progress": "^3.11.2",
     "readline-sync": "^1.4.10",
     "weighted": "^1.0.0"
   },
   "devDependencies": {
+    "@types/cli-progress": "^3.11.0",
     "@types/node": "^18.0.1",
     "@types/readline-sync": "^1.4.4"
   }

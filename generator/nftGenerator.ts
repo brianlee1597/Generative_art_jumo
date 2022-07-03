@@ -1,5 +1,6 @@
 import fs from "fs";
 import weighted from 'weighted';
+import cliProgress from "cli-progress";
 import { Canvas, CanvasRenderingContext2D, createCanvas, loadImage } from "canvas";
 import { type AttrData } from "./attrData";
 
@@ -109,6 +110,9 @@ export default class NFTGenerator implements MintFunction {
 
     public generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): MetaData[] {
         let i = 1, nftMetadata: MetaData[] = [];
+        const mintBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+
+        mintBar.start(numOfNfts, 0);
 
         while (i <= numOfNfts) {
             const attrSet = this.getRandomAttributesSet(attrData);
@@ -135,7 +139,10 @@ export default class NFTGenerator implements MintFunction {
             }
 
             nftMetadata.push(metadata);
+            mintBar.increment();
         }
+
+        mintBar.stop();
 
         return nftMetadata;
     }

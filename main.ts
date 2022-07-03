@@ -19,9 +19,12 @@ import { attrData } from "./generator/attrData";
 
     const nftFactory = new NFTGenerator(width, height);
     await nftFactory.cacheImageBuffers();
-    const metadata = nftFactory.generateNFTs(name, attrData, nums);
-    fs.writeFileSync(`${nftFactory.metaDir}/nfts.json`, JSON.stringify(metadata));
+    
+    console.log("------------------------------------------------------------------------------");
+    console.log("----------------------------Starting NFT Generation---------------------------");
+    console.log("------------------------------------------------------------------------------");
 
+    const metadata = nftFactory.generateNFTs(name, attrData, nums);
     const rarityReport = attrData.map(data => {
         const [frequencies, total] = nftFactory.frequencyTracker[data.trait_type];
 
@@ -40,5 +43,10 @@ import { attrData } from "./generator/attrData";
         }
     });
 
+    fs.writeFileSync(`${nftFactory.metaDir}/nfts.json`, JSON.stringify(metadata));
     fs.writeFileSync(`${nftFactory.metaDir}/report.json`, JSON.stringify(rarityReport));
+
+    console.log("------------------------------------------------------------------------------");
+    console.log("----------------------------Finished NFT Generation---------------------------");
+    console.log("------------------------------------------------------------------------------");
 })();
