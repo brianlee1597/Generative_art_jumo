@@ -7,6 +7,7 @@ type Attr = { attribute: string };
 type AttrSet = { name: string, attribute: string };
 
 interface MintFunction {
+    cacheImageBuffers (): Promise<void>;
     generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): void;
 }
 
@@ -25,8 +26,6 @@ export default class NFTGenerator implements MintFunction {
 
     private pickRandomFrom (attr: AttrData): Attr {
         const attribute = weighted.select(attr.attributes, attr.weights) + ".png";
-        const index = attr.attributes.indexOf(attribute);
-
         return { attribute };
     }
 
