@@ -1,4 +1,5 @@
 // import fs from "fs";
+import List from "dbly-linked-list";
 
 type OneNFTSet = { [key: string]: string; };
 
@@ -7,21 +8,25 @@ interface MintFunction {
 }
 
 class NFTGenerator implements MintFunction {
+    private pathBufferMap: Map<string, any>;
     private generatedSet: Set<string>;
-    private attrMap: Map<string, string>;
+    private attrList: List;
 
     constructor () {
+        this.pathBufferMap = new Map();
         this.generatedSet = new Set();
-        this.attrMap = new Map();
+        this.attrList = new List();
+    }
+
+    private cacheImageBuffers () {
+        
     }
 
     private pickRandomFrom (arr: string[]) {
         return ""; //placehodler
     }
 
-    private pickRandomAttributesSet () {
-        const arr = Object.fromEntries(this.attrMap);
-
+    private getRandomAttributesSet () {
         return {}; //placeholder
     }
 
