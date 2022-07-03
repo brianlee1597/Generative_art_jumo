@@ -6,6 +6,11 @@ import { type AttrData } from "./attrData";
 type Attr = { value: string };
 type AttrSet = { trait_type: string, value: string };
 type MetaData = { filename: string, attributes: AttrSet[] };
+type PercentageTracker = {
+    [key: string]: {
+        [key: string]: number,
+    }
+}
 
 interface MintFunction {
     cacheImageBuffers (): Promise<void>;
@@ -19,6 +24,7 @@ export default class NFTGenerator implements MintFunction {
     private ctx: CanvasRenderingContext2D;
     private nftDir: string;
     private pngDir: string;
+    public percentTracker: PercentageTracker;
     public metaDir: string;
 
     constructor (width: number, height: number) {
@@ -26,6 +32,7 @@ export default class NFTGenerator implements MintFunction {
         this.generatedSet = new Set();
         this.canvas = createCanvas(width, height);
         this.ctx = this.canvas.getContext('2d');
+        this.percentTracker = {};
         this.nftDir = "./nfts";
         this.pngDir = "./pngs";
         this.metaDir = "./metadata";
