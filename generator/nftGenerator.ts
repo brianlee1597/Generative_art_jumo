@@ -19,6 +19,7 @@ export default class NFTGenerator implements MintFunction {
     private ctx: CanvasRenderingContext2D;
     private nftDir: string;
     private pngDir: string;
+    public metaDir: string;
 
     constructor (width: number, height: number) {
         this.pathImageMap = new Map();
@@ -27,16 +28,21 @@ export default class NFTGenerator implements MintFunction {
         this.ctx = this.canvas.getContext('2d');
         this.nftDir = "./nfts";
         this.pngDir = "./pngs";
+        this.metaDir = "./metadata";
 
         if (!fs.existsSync(this.pngDir))
             throw new Error("The PNG folder (/pngs) doesn't exist");
 
         if (!fs.existsSync(this.nftDir))
             fs.mkdirSync(this.nftDir);
+
+        if (!fs.existsSync(this.metaDir))
+            fs.mkdirSync(this.metaDir);
     }
 
     private pickRandomFrom (attr: AttrData): Attr {
-        const value = weighted.select(attr.value, attr.weights) + ".png";
+        const values = attr.value, weights = attr.weights;
+        const value = weighted.select(values, weights) + ".png";
         return { value };
     }
 
@@ -44,8 +50,9 @@ export default class NFTGenerator implements MintFunction {
         const attrSet: AttrSet[] = [];
 
         attrData.forEach(attrs => {
-            const attr = this.pickRandomFrom(attrs);
-            attrSet.push({ trait_type: attrs.trait_type, ...attr });
+            const trait_type = attrs.trait_type;
+            const { value } = this.pickRandomFrom(attrs);
+            attrSet.push({ trait_type, value });
         })
 
         return attrSet;
@@ -53,13 +60,16 @@ export default class NFTGenerator implements MintFunction {
 
     private printOnCanvas (set: AttrSet[]): void {
         set.forEach(attr => {
-            if (attr.value.includes("None")) return;
+            const { trait_type, value } = attr;
+            if (value.includes("None")) return;
 
-            const folder = this.pathImageMap.get(attr.trait_type);
-            if (!folder) throw new Error(`No folder found for ${attr.trait_type}`);
+            const folder = this.pathImageMap.get(trait_type);
+            if (!folder)
+                throw new Error(`No folder found for ${trait_type}`);
 
-            const imageBuffer = folder.get(attr.value);
-            if (!imageBuffer) throw new Error(`No image ${attr.value} found in ${attr.trait_type}`);
+            const imageBuffer = folder.get(value);
+            if (!imageBuffer) 
+                throw new Error(`No image ${value} found in ${trait_type}`);
 
             this.ctx.drawImage(imageBuffer, 0, 0);
         })

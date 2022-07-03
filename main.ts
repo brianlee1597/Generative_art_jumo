@@ -1,6 +1,7 @@
 import rls from "readline-sync";
 import NFTGenerator from "./generator/nftGenerator";
 import { attrData } from "./generator/attrData";
+import fs from "fs";
 
 (async () => {
     let totalCombo = 1;
@@ -19,6 +20,5 @@ import { attrData } from "./generator/attrData";
     const nftFactory = new NFTGenerator(width, height);
     await nftFactory.cacheImageBuffers();
     const metadata = nftFactory.generateNFTs(name, attrData, nums);
-
-    console.log(JSON.stringify(metadata, null, 2));
+    fs.writeFileSync("./metadata/nfts.json", JSON.stringify(metadata));
 })();
