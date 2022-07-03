@@ -23,6 +23,7 @@ import { attrData } from "./generator/attrData";
     console.log("------------------------------------------------------------------------------");
     console.log("----------------------------Starting NFT Generation---------------------------");
     console.log("------------------------------------------------------------------------------");
+    console.log(" ");
 
     const metadata = nftFactory.generateNFTs(name, attrData, nums);
     const rarityReport = attrData.map(data => {
@@ -46,6 +47,7 @@ import { attrData } from "./generator/attrData";
     fs.writeFileSync(`${nftFactory.metaDir}/nfts.json`, JSON.stringify(metadata));
     fs.writeFileSync(`${nftFactory.metaDir}/report.json`, JSON.stringify(rarityReport));
 
+    console.log(" ");
     console.log("------------------------------------------------------------------------------");
     console.log("----------------------------Finished NFT Generation---------------------------");
     console.log("------------------------------------------------------------------------------");
