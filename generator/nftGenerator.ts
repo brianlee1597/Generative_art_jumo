@@ -42,7 +42,7 @@ export default class NFTGenerator implements MintFunction {
 
     private pickRandomFrom (attr: AttrData): Attr {
         const values = attr.value, weights = attr.weights;
-        const value = weighted.select(values, weights) + ".png";
+        let value = weighted.select(values, weights);
         return { value };
     }
 
@@ -67,7 +67,7 @@ export default class NFTGenerator implements MintFunction {
             if (!folder)
                 throw new Error(`No folder found for ${trait_type}`);
 
-            const imageBuffer = folder.get(value);
+            const imageBuffer = folder.get(`${value}.png`);
             if (!imageBuffer) 
                 throw new Error(`No image ${value} found in ${trait_type}`);
 
