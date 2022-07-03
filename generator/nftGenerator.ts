@@ -7,7 +7,7 @@ import { type AttrData } from "./attrData";
 type Attr = { value: string };
 type AttrSet = { trait_type: string, value: string };
 type MetaData = { filename: string, attributes: AttrSet[] };
-type PercentageTracker = {
+type FrequencyTracker = {
     [key: string]: [{
         [key: string]: number,
     }, number];
@@ -25,7 +25,7 @@ export default class NFTGenerator implements MintFunction {
     private ctx: CanvasRenderingContext2D;
     private nftDir: string;
     private pngDir: string;
-    public frequencyTracker: PercentageTracker;
+    public frequencyTracker: FrequencyTracker;
     public metaDir: string;
 
     constructor (width: number, height: number) {
@@ -143,7 +143,6 @@ export default class NFTGenerator implements MintFunction {
         }
 
         mintBar.stop();
-
         return nftMetadata;
     }
 }
