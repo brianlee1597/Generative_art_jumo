@@ -1,45 +1,39 @@
-type Path = string;
+// import fs from "fs";
 
-type GeneratedSet = {
-    [key: string]: Path;
-};
+type OneNFTSet = { [key: string]: string; };
 
-interface MintStates {
-    generatedSet: Set<string>;
+interface MintFunction {
+    generateNFTs (numOfNfts: number): void;
 }
 
-interface MintFunctions {
-    cacheImageBuffer (): void;
-    pickRandomFrom (arr: string[]): string;
-    pickRandomAttributesSet (): GeneratedSet;
-    printOnCanvas (set: GeneratedSet): void;
-    clearCanvas (): void;
-}
-
-class NFTGenerator implements MintStates, MintFunctions {
-    generatedSet: Set<string>;
+class NFTGenerator implements MintFunction {
+    private generatedSet: Set<string>;
+    private attrMap: Map<string, string>;
 
     constructor () {
-        this.generatedSet = new Set<string>();
+        this.generatedSet = new Set();
+        this.attrMap = new Map();
     }
 
-    cacheImageBuffer () {
-
+    private pickRandomFrom (arr: string[]) {
+        return ""; //placehodler
     }
 
-    pickRandomFrom (arr: string[]) {
-        return ""; //placehodler;
-    }
+    private pickRandomAttributesSet () {
+        const arr = Object.fromEntries(this.attrMap);
 
-    pickRandomAttributesSet () {
         return {}; //placeholder
     }
 
-    printOnCanvas (set: GeneratedSet) {
+    private printOnCanvas (set: OneNFTSet) {
 
     }
 
-    clearCanvas () {
+    private clearCanvas () {
+
+    }
+
+    generateNFTs (numOfNfts: number) {
 
     }
 }
