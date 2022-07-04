@@ -4,15 +4,16 @@ import cliProgress from "cli-progress";
 import { Canvas, CanvasRenderingContext2D, createCanvas, loadImage } from "canvas";
 import { type AttrData } from "./attrData";
 
-type AttrSet = { trait_type: string, value: string };
+type AttrSet = { 
+    trait_type: string, 
+    value: string 
+};
+
 type MetaData = { 
     filename: string, 
     attributes: AttrSet[] 
 }
-type FinalResult = { 
-    nftMetaData: MetaData[], 
-    rarityReport: any 
-};
+
 type FrequencyTracker = {
     [key: string]: [{
         [key: string]: number,
@@ -21,7 +22,7 @@ type FrequencyTracker = {
 
 interface MintFunction {
     cacheImageBuffers (): Promise<void>;
-    generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): FinalResult;
+    generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): void;
 }
 
 export default class NFTGenerator implements MintFunction {
@@ -32,7 +33,7 @@ export default class NFTGenerator implements MintFunction {
     private nftDir: string;
     private pngDir: string;
     private frequencyTracker: FrequencyTracker;
-    public metaDir: string;
+    private metaDir: string;
 
     constructor (width: number, height: number) {
         this.imageMap = new Map();
@@ -101,8 +102,9 @@ export default class NFTGenerator implements MintFunction {
             const attrList = fs.readdirSync(`./pngs/${attrs}`)
             .filter(file => !file.includes("DS_Store"));
             const imageMap = new Map();
-            this.frequencyTracker[attrs] = [{}, 0];
 
+            this.frequencyTracker[attrs] = [{}, 0];
+            
             for (const attr of attrList) {
                 const image = await loadImage(`./pngs/${attrs}/${attr}`);
                 const value = attr.replace(".png", "");
@@ -114,7 +116,7 @@ export default class NFTGenerator implements MintFunction {
         };
     }
 
-    public generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): FinalResult {
+    public generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): void {
         let i = 1, nftMetaData: MetaData[] = [];
         const mintBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
@@ -123,16 +125,6 @@ export default class NFTGenerator implements MintFunction {
         while (i <= numOfNfts) {
             const attrSet = this.getRandomAttributesSet(attrData);
             if (this.generatedSet.has(JSON.stringify(attrSet))) continue;
-
-            attrSet.forEach(attr => {
-                if (attr.value.includes("None") && 
-                this.frequencyTracker[attr.trait_type][0][attr.value] === undefined) {
-                    this.frequencyTracker[attr.trait_type][0][attr.value] = 0;
-                }
-
-                this.frequencyTracker[attr.trait_type][0][attr.value] += 1;
-                this.frequencyTracker[attr.trait_type][1] += 1;
-            })
             
             this.printOnCanvas(attrSet);
             const buffer = this.canvas.toBuffer("image/png");
@@ -143,8 +135,18 @@ export default class NFTGenerator implements MintFunction {
                 filename: `${name} #${i++}.png`,
                 attributes: attrSet,
             }
-
             nftMetaData.push(metadata);
+
+            attrSet.forEach(attr => {
+                if (attr.value.includes("None") && 
+                this.frequencyTracker[attr.trait_type][0][attr.value] == null) {
+                    this.frequencyTracker[attr.trait_type][0][attr.value] = 0;
+                }
+
+                this.frequencyTracker[attr.trait_type][0][attr.value] += 1;
+                this.frequencyTracker[attr.trait_type][1] += 1;
+            })
+
             mintBar.increment();
         }
 
@@ -168,6 +170,7 @@ export default class NFTGenerator implements MintFunction {
             }
         });
 
-        return { nftMetaData, rarityReport };
+        fs.writeFileSync(`${this.metaDir}/nfts.json`, JSON.stringify(nftMetaData));
+        fs.writeFileSync(`${this.metaDir}/report.json`, JSON.stringify(rarityReport));
     }
 }

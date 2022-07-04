@@ -1,4 +1,3 @@
-import fs from "fs";
 import rls from "readline-sync";
 import NFTGenerator from "./generator/nftGenerator";
 import { attrData } from "./generator/attrData";
@@ -25,9 +24,7 @@ import { attrData } from "./generator/attrData";
     console.log("------------------------------------------------------------------------------");
     console.log(" ");
 
-    const { nftMetaData, rarityReport } = nftFactory.generateNFTs(name, attrData, nums);
-    fs.writeFileSync(`${nftFactory.metaDir}/nfts.json`, JSON.stringify(nftMetaData));
-    fs.writeFileSync(`${nftFactory.metaDir}/report.json`, JSON.stringify(rarityReport));
+    nftFactory.generateNFTs(name, attrData, nums);
 
     console.log(" ");
     console.log("------------------------------------------------------------------------------");
