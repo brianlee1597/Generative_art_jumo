@@ -25,17 +25,17 @@ interface MintFunction {
 }
 
 export default class NFTGenerator implements MintFunction {
-    private pathImageMap: Map<string, Map<string, any>>;
+    private imageMap: Map<string, Map<string, any>>;
     private generatedSet: Set<string>;
     private canvas: Canvas;
     private ctx: CanvasRenderingContext2D;
     private nftDir: string;
     private pngDir: string;
-    public frequencyTracker: FrequencyTracker;
+    private frequencyTracker: FrequencyTracker;
     public metaDir: string;
 
     constructor (width: number, height: number) {
-        this.pathImageMap = new Map();
+        this.imageMap = new Map();
         this.generatedSet = new Set();
         this.canvas = createCanvas(width, height);
         this.ctx = this.canvas.getContext('2d');
@@ -77,7 +77,7 @@ export default class NFTGenerator implements MintFunction {
             const { trait_type, value } = attr;
             if (value.includes("None")) return;
 
-            const folder = this.pathImageMap.get(trait_type);
+            const folder = this.imageMap.get(trait_type);
             if (!folder)
                 throw new Error(`No folder found for ${trait_type}`);
 
@@ -110,7 +110,7 @@ export default class NFTGenerator implements MintFunction {
                 this.frequencyTracker[attrs][0][value] = 0;
             }
 
-            this.pathImageMap.set(attrs, imageMap);
+            this.imageMap.set(attrs, imageMap);
         };
     }
 
