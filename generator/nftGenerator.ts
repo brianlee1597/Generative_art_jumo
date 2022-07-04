@@ -6,7 +6,14 @@ import { type AttrData } from "./attrData";
 
 type Attr = { value: string };
 type AttrSet = { trait_type: string, value: string };
-type MetaData = { filename: string, attributes: AttrSet[] };
+type MetaData = { 
+    filename: string, 
+    attributes: AttrSet[] 
+}
+type FinalResult = { 
+    nftMetaData: MetaData[], 
+    rarityReport: any 
+};
 type FrequencyTracker = {
     [key: string]: [{
         [key: string]: number,
@@ -15,7 +22,7 @@ type FrequencyTracker = {
 
 interface MintFunction {
     cacheImageBuffers (): Promise<void>;
-    generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): MetaData[];
+    generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): FinalResult;
 }
 
 export default class NFTGenerator implements MintFunction {
@@ -108,8 +115,8 @@ export default class NFTGenerator implements MintFunction {
         };
     }
 
-    public generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): MetaData[] {
-        let i = 1, nftMetadata: MetaData[] = [];
+    public generateNFTs (name: string, attrData: AttrData[], numOfNfts: number): FinalResult {
+        let i = 1, nftMetaData: MetaData[] = [];
         const mintBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
         mintBar.start(numOfNfts, 0);
@@ -138,11 +145,30 @@ export default class NFTGenerator implements MintFunction {
                 attributes: attrSet,
             }
 
-            nftMetadata.push(metadata);
+            nftMetaData.push(metadata);
             mintBar.increment();
         }
 
         mintBar.stop();
-        return nftMetadata;
+
+        const rarityReport = attrData.map(data => {
+            const [frequencies, total] = this.frequencyTracker[data.trait_type];
+    
+            return {
+                trait_type: data.trait_type,
+                values: data.value.map(val => {
+                    const desiredRarity = data.weights[data.value.indexOf(val)] * 100;
+                    const actualRarity  = + (frequencies[val] / total * 100).toString().split(".")[0];
+    
+                    return {
+                        value: val,
+                        desiredRarity,
+                        actualRarity,
+                    }
+                })
+            }
+        });
+
+        return { nftMetaData, rarityReport };
     }
 }
