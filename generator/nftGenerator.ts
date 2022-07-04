@@ -4,7 +4,6 @@ import cliProgress from "cli-progress";
 import { Canvas, CanvasRenderingContext2D, createCanvas, loadImage } from "canvas";
 import { type AttrData } from "./attrData";
 
-type Attr = { value: string };
 type AttrSet = { trait_type: string, value: string };
 type MetaData = { 
     filename: string, 
@@ -55,10 +54,10 @@ export default class NFTGenerator implements MintFunction {
             fs.mkdirSync(this.metaDir);
     }
 
-    private pickRandomFrom (attr: AttrData): Attr {
+    private pickRandomFrom (attr: AttrData): string {
         const values = attr.value, weights = attr.weights;
         let value = weighted.select(values, weights);
-        return { value };
+        return value;
     }
 
     private getRandomAttributesSet (attrData: AttrData[]): AttrSet[] {
@@ -66,7 +65,7 @@ export default class NFTGenerator implements MintFunction {
 
         attrData.forEach(attrs => {
             const trait_type = attrs.trait_type;
-            const { value } = this.pickRandomFrom(attrs);
+            const value = this.pickRandomFrom(attrs);
             attrSet.push({ trait_type, value });
         })
 
